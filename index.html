@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My AI</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111827;
+            color: white;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #chat {
+            height: 450px;
+            background: #1f2937;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .user {
+            background: #2563eb;
+            text-align: right;
+        }
+
+        .ai {
+            background: #374151;
+        }
+
+        .input-area {
+            display: flex;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🤖 My AI</h1>
+
+    <div id="chat">
+        <div class="message ai">
+            你好！我是你的 AI，請輸入問題。
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input id="userInput" placeholder="輸入你的問題...">
+        <button onclick="sendMessage()">送出</button>
+    </div>
+
+</div>
+
+<script>
+function sendMessage() {
+
+    const input = document.getElementById("userInput");
+    const chat = document.getElementById("chat");
+
+    const message = input.value;
+
+    if (message === "") return;
+
+    chat.innerHTML += `
+        <div class="message user">
+            ${message}
+        </div>
+    `;
+
+    input.value = "";
+
+    chat.innerHTML += `
+        <div class="message ai">
+            我現在還沒有連接真正的 AI 🤖
+        </div>
+    `;
+
+    chat.scrollTop = chat.scrollHeight;
+}
+</script>
+
+</body>
+</html>
