@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My AI</title>
+    <title>Nova AI</title>
 
     <style>
         body {
@@ -21,6 +22,7 @@
 
         h1 {
             text-align: center;
+            color: #60a5fa;
         }
 
         #chat {
@@ -29,12 +31,15 @@
             border-radius: 12px;
             padding: 20px;
             overflow-y: auto;
+            box-sizing: border-box;
         }
 
         .message {
             margin: 10px 0;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
         }
 
         .user {
@@ -54,6 +59,7 @@
 
         input {
             flex: 1;
+            min-width: 0;
             padding: 15px;
             border-radius: 8px;
             border: none;
@@ -66,55 +72,103 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            background: #3b82f6;
+            color: white;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     </style>
 </head>
 
 <body>
-
 <div class="container">
 
-    <h1>🤖 My AI</h1>
+    <h1>🤖 Nova AI</h1>
 
     <div id="chat">
         <div class="message ai">
-            你好！我是你的 AI，請輸入問題。
+            你好！我是 Nova AI，請輸入問題。
         </div>
     </div>
 
     <div class="input-area">
         <input id="userInput" placeholder="輸入你的問題...">
-        <button onclick="sendMessage()">送出</button>
+        <button id="sendBtn" onclick="sendMessage()">送出</button>
     </div>
 
 </div>
 
 <script>
-function sendMessage() {
+const API_URL =
+    "https://nova-ai-api.nathan-shuie.workers.dev";
 
+async function sendMessage() {
     const input = document.getElementById("userInput");
     const chat = document.getElementById("chat");
+    const button = document.getElementById("sendBtn");
 
-    const message = input.value;
+    const message = input.value.trim();
 
-    if (message === "") return;
+    if (!message) return;
 
-    chat.innerHTML += `
-        <div class="message user">
-            ${message}
-        </div>
-    `;
+    // 顯示使用者訊息
+    const userDiv = document.createElement("div");
+    userDiv.className = "message user";
+    userDiv.textContent = message;
+    chat.appendChild(userDiv);
 
     input.value = "";
+    button.disabled = true;
 
-    chat.innerHTML += `
-        <div class="message ai">
-            我現在還沒有連接真正的 AI 🤖
-        </div>
-    `;
+    // 顯示等待訊息
+    const aiDiv = document.createElement("div");
+    aiDiv.className = "message ai";
+    aiDiv.textContent = "Nova AI 正在思考中...";
+    chat.appendChild(aiDiv);
 
     chat.scrollTop = chat.scrollHeight;
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: message
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "API 發生錯誤");
+        }
+
+        aiDiv.textContent =
+            data.response ||
+            data.result ||
+            JSON.stringify(data);
+
+    } catch (error) {
+        aiDiv.textContent =
+            "連接 AI 失敗：" + error.message;
+    }
+
+    button.disabled = false;
+    chat.scrollTop = chat.scrollHeight;
 }
+
+// 按 Enter 也能送出
+document.getElementById("userInput")
+    .addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
 </script>
 
 </body>
